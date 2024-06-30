@@ -34,7 +34,8 @@ connection.query(`CREATE DATABASE IF NOT EXISTS ${process.env.DB_NAME}`, (err) =
         const tableQuery = `CREATE TABLE IF NOT EXISTS tasks (
                 id VARCHAR(255) PRIMARY KEY NOT NULL,
                 title varchar(255) NOT NULL,
-                status BOOLEAN default false
+                status BOOLEAN default false,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )`
 
         // Check IF table Exist

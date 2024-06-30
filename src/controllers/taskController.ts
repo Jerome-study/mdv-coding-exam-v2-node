@@ -18,9 +18,12 @@ const getSingleTask = (task_id : string, callback : Function) => {
 
 // Get Tasks
 const getTasks = (req : Request, res : Response) => {
-    const getQuery = `SELECT * FROM tasks`
+    const getQuery = `SELECT * FROM tasks ORDER BY created_at`
     connection.query(getQuery, (err, results) => {
-        if (err) return console.log(err.message)
+        if (err) {
+            res.status(500).json({ error: 'Error getting task' });
+            return
+        }
         res.send(results)
     });
 }
@@ -36,7 +39,7 @@ const addTask = (req : Request, res : Response) => {
             res.status(500).json({ error: 'Error inserting task' });
             return
         }
-        res.status(200).json({ message: "Task is inserted successfully", task_id })
+        res.status(200).json({ id: task_id, title, status: 0})
     })
 }
 
@@ -56,6 +59,7 @@ const deleteTask = (req : Request, res : Response) => {
 }
 
 const modifyTask = (res : Response, id : string, query : string, method : string) => {
+    // Check if task exist
     getSingleTask(id, (err : any, task : boolean) => {
         if (err) {
             res.status(500).json({ error: 'Error checking task' });
@@ -65,6 +69,7 @@ const modifyTask = (res : Response, id : string, query : string, method : string
             return res.status(404).json({ error: 'Task not found' });
         }
 
+        // If exist, the query will update or delete depends on the method
         connection.query(query, [id], (err) => {
             if (err) {
                 return res.status(500).json({ error: 'Error updating task status' });
